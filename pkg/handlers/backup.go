@@ -15,6 +15,7 @@ type Handlers struct {
 	NvimConfigPath string // XDG_CONFIG_HOME is the default path for nvim configuration file
 	RepoName       string // this is the github repository name, it uses this if it is a fork
 	Installed      bool   // tells if whether both neovim and tmux are installed.
+	HomeDir        string // path to home directory
 }
 
 // TmuxBackup backs up the existing tmux configuration file be it a file or directory
@@ -39,6 +40,8 @@ func (b *Handlers) TmuxBackup(c *ishell.Context) {
 		return
 	}
 
+	c.Println("Backup successful")
+
 }
 
 // NvimBackup backs up the existing nvim configuration be it a file or directory
@@ -52,7 +55,7 @@ func (b *Handlers) NvimBackup(c *ishell.Context) {
 
 	// if backup file exists, remove it, then create a new one
 	if _, err := os.Stat(backup_filename); err == nil {
-		c.Println("A backup file exists with same name")
+		c.Println("A backup file exists with same name. Removing that")
 		os.Remove(backup_filename)
 	}
 
@@ -62,5 +65,7 @@ func (b *Handlers) NvimBackup(c *ishell.Context) {
 		c.Println("Error creating NVIM backup file", err)
 		return
 	}
+
+	c.Println("Backup successful")
 
 }
