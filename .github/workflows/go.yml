@@ -19,9 +19,8 @@ jobs:
       with:
         go-version: '^1.16'
     
-    # Security checks
-    # - name: Checks 
-    #   uses: securego/gosec@v2.18.2
+    - name: Checks 
+      uses: securego/gosec@v2.18.2
     
     - name: Lint
       uses: golangci/golangci-lint-action@v3.2.0
