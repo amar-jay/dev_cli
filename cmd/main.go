@@ -22,7 +22,14 @@ import (
 func main() {
 	shell := ishell.New()
 
-	handler := handlers.New("amar-jay/dev_cli", ".backup")
+	handler := handlers.New("amar-jay/dev_cli", ".dev_cli")
+
+	shell.AddCmd(&ishell.Cmd{
+		Name:    "download",
+		Aliases: []string{"i"},
+		Func:    handler.CloneRepo,
+		Help:    "Downloading of amar-jay's setup",
+	})
 
 	shell.AddCmd(&ishell.Cmd{
 		Name:    "install",
@@ -47,6 +54,7 @@ func main() {
 				c.Println("Invalid Prompt")
 			}
 		},
+		Help: "Check for present environment variables",
 	})
 
 	shell.AddCmd(&ishell.Cmd{

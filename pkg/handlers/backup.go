@@ -69,3 +69,18 @@ func (b *Handlers) NvimBackup(c *ishell.Context) {
 	c.Println("Backup successful")
 
 }
+
+// restores the previous tmux configuration backup
+func (b *Handlers) TmuxRestore(c *ishell.Context) {
+	// TODO: based on the backup file name, determone which is the latest Backup file
+	// TODO: then untar the file and restore the configuration
+	// TODO: if the backup file does not exist, then print a message
+	// TODO: in the case of tmux, rerun plugins installation
+}
+
+// restores the previous neovim configuration backup
+func (b *Handlers) NvimRestore(c *ishell.Context) {
+	// TODO: based on the backup file name, determone which is the latest Backup file
+	// TODO: then untar the file and restore the configuration
+	// TODO: if the backup file does not exist, then print a message
+}

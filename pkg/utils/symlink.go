@@ -5,14 +5,6 @@ import (
 	"os"
 )
 
-type FileType int
-
-const (
-	SymLink = iota
-	File
-	NotExist
-)
-
 // checks wheather a path is a is a symbolic link or not
 func IsSymlink(path string) bool {
 	fi, err := os.Stat(path)
