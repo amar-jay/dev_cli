@@ -7,25 +7,33 @@ on:
 
 jobs:
   build:
-    name: GoReleaser build
+    name: Build Go Binary
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out code into the Go module directory
+      - name: Checkout code
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 0 # See: https://goreleaser.com/ci/actions/
-
-      - name: Set up go
+      
+      - name: Set up Go
         uses: actions/setup-go@v2
         with:
           go-version: 1.22.0
-        id: go
 
-      - name: release
-        uses: goreleaser/goreleaser-action@master
+      - name: Build
+        run: go build -o dev_cli ./cmd/main.go
+
+  release:
+    name: Release Binary
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
         with:
-          version: 1.22.0
-          args: release --rm-dist
+          upload_url: ${{ github.event.repository.releases_url }}
+          asset_path: ./dev_cli
+          asset_name: dev_cli
+          asset_content_type: application/octet-stream
         env:
           GITHUB_TOKEN: ${{ secrets.GO_RELEASER_GITHUB_TOKEN }}
