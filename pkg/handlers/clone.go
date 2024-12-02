@@ -6,11 +6,10 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
-
-	"github.com/abiosoft/ishell/v2"
 )
 
-func ghForkRepo(c *ishell.Context, repoName, tempDir string) error {
+// ignore unused
+func ghForkRepo(c HandlerContext, repoName, tempDir string) error {
 	out, err := exec.Command("gh", "repo", "view", repoName, "--json", "fork", "--jq", ".fork").Output()
 	if err != nil {
 		return err
@@ -21,7 +20,7 @@ func ghForkRepo(c *ishell.Context, repoName, tempDir string) error {
 		c.Println("You have already forked the repository. Cloning your fork.")
 		out, err := exec.Command("gh", "repo", "view", repoName, "--json", "html_url", "--jq", ".parent.fork.html_url").Output()
 		if err != nil {
-			return fmt.Errorf("Error cloning repo:%v", err)
+			return fmt.Errorf("error cloning repo:%v", err)
 		}
 
 		parentURL := strings.TrimSpace(string(out))
@@ -30,7 +29,7 @@ func ghForkRepo(c *ishell.Context, repoName, tempDir string) error {
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		if err := cmd.Run(); err != nil {
-			return fmt.Errorf("Error cloning the repo: %v", err)
+			return fmt.Errorf("error cloning the repo: %v", err)
 		}
 	} else {
 
@@ -39,7 +38,7 @@ func ghForkRepo(c *ishell.Context, repoName, tempDir string) error {
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		if err := cmd.Run(); err != nil {
-			return fmt.Errorf("Error forking the repo: %v", err)
+			return fmt.Errorf("error forking the repo: %v", err)
 		}
 
 		// Extracting the repository name from the full path
@@ -47,7 +46,7 @@ func ghForkRepo(c *ishell.Context, repoName, tempDir string) error {
 
 		err := os.Rename(repoDir, tempDir)
 		if err != nil {
-			return fmt.Errorf("Error renaming the repo : %v", err)
+			return fmt.Errorf("error renaming the repo : %v", err)
 		}
 
 	}
@@ -55,21 +54,21 @@ func ghForkRepo(c *ishell.Context, repoName, tempDir string) error {
 	return nil
 }
 
-func gitForkRepo(c *ishell.Context, repoName, tempDir string) error {
+func gitForkRepo(_ HandlerContext, repoName, tempDir string) error {
 	cmd := exec.Command("git", "clone", "https://github.com/"+repoName+".git", tempDir)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("Error cloning the repo: %v", err)
+		return fmt.Errorf("error cloning the repo: %v", err)
 	}
 	return nil
 }
 
 // clone github config to path and load
-func (b *Handlers) CloneRepo(c *ishell.Context) {
-	tempDir, err := os.MkdirTemp("", "dev_cli-*")
+func (b *Handlers) CloneRepo(c HandlerContext) {
+	tempDir, err := os.MkdirTemp(".", "dev_cli-*")
 	if err != nil {
-		c.Println("Error creating temporary directory:", err)
+		c.Println("error creating temporary directory:", err.Error())
 		return
 	}
 	defer os.RemoveAll(tempDir)
@@ -78,7 +77,7 @@ func (b *Handlers) CloneRepo(c *ishell.Context) {
 	print("NOTE: Due to some complications with gh, using git by default")
 	c.Println("gh CLI is not installed. Cloning the", b.RepoName, "repository using git to", tempDir)
 	if err := gitForkRepo(c, b.RepoName, tempDir); err != nil {
-		c.Println("git CLI clone error: ", err)
+		c.Println("git CLI clone error: ", err.Error())
 		return
 	}
 	/*
@@ -100,18 +99,18 @@ func (b *Handlers) CloneRepo(c *ishell.Context) {
 		oldpath := filepath.Join(tempDir, name)
 		if _, err := os.Lstat(newpath); os.IsNotExist(err) {
 			if err := os.Rename(oldpath, newpath); err != nil {
-				c.Println("error copying", oldpath, "to", newpath, err)
+				c.Println("error copying", oldpath, "to", newpath, err.Error())
 				return
 			}
 		}
 
 		if err = os.RemoveAll(newpath); err != nil {
-			c.Print("Error removing previous config", err)
+			c.Println("error removing previous config", err.Error())
 			return
 		}
 
 		if err := os.Rename(oldpath, newpath); err != nil {
-			c.Println("error copying", oldpath, "to", newpath, err)
+			c.Println("error copying", oldpath, "to", newpath, err.Error())
 			return
 		}
 	}

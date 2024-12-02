@@ -16,27 +16,42 @@ func IsSymlink(path string) bool {
 //
 //	@param pathLink : is the path of the symbolic link
 //	@param path: is the path of the file or directory
+//
+// CreateSymlink ensures a valid symlink from src to dst
 func CreateSymlink(src, dst string) error {
-	// Check if src is a symlink
+	// Verify if dst is a symlink
 	if IsSymlink(dst) {
-		//DEBUG: fmt.Printf("Source '%v' is already a symlink.\n", dst)
-		return nil
+		target, err := os.Readlink(dst)
+		if err != nil {
+			return fmt.Errorf("failed to read symlink target: %w", err)
+		}
+		// If the symlink points to the correct target, return
+		if target == src {
+			fmt.Printf("Symlink '%v' -> '%v' already exists.\n", dst, src)
+			return nil
+		}
+		// Remove incorrect symlink
+		fmt.Printf("Removing incorrect symlink '%v' -> '%v'.\n", dst, target)
+		if err := os.Remove(dst); err != nil {
+			return fmt.Errorf("failed to remove invalid symlink: %w", err)
+		}
 	}
 
-	// Remove existing files/directories at src location
-	_, err := os.Stat(dst)
-	if err == nil || (!os.IsNotExist(err)) {
-		fmt.Println("Removing old source")
-		err = os.RemoveAll(dst) //TODO: does this work on all platforms?
-		if err != nil {
-			return err
+	// Remove existing file/directory at dst if it's not a symlink
+	if _, err := os.Stat(dst); err == nil {
+		fmt.Printf("Removing existing path '%v'.\n", dst)
+		if err := os.RemoveAll(dst); err != nil {
+			return fmt.Errorf("failed to remove existing path: %w", err)
 		}
 	}
 
 	// Create a new symlink
-	err = os.Symlink(src, dst)
-	if err != nil {
-		return err
+	fmt.Printf("Creating symlink '%v' -> '%v'.\n", dst, src)
+	if err := os.Symlink(src, dst); err != nil {
+		if os.IsExist(err) {
+			return fmt.Errorf("tmux config doesn't match Amar Jay's config (HINT: DELETE & DOWNLOAD IT)")
+		}
+		return fmt.Errorf("failed to create symlink: %w", err)
 	}
 
 	return nil

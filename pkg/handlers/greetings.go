@@ -1,11 +1,10 @@
 package handlers
 
 import (
-	"github.com/abiosoft/ishell/v2"
 	"github.com/gookit/color"
 )
 
-func (b *Handlers) Greetings(c *ishell.Context) {
+func (b *Handlers) Greetings(c HandlerContext) {
 	c.Println("")
 	color.Style{color.FgBlue.Darken(), color.OpBold}.Printf("%-65s\n", "==================================================================")
 	color.Style{color.FgBlue.Darken(), color.OpBold}.Printf("%-65s\n", "          Welcome to amarjay's Dev setup!")
@@ -26,7 +25,7 @@ func (b *Handlers) Greetings(c *ishell.Context) {
 	c.Println("In the case where you have problems with emojis and icons,")
 	c.Println("download and install any nerd fonts on your PC.")
 	// TODO: fetch link to nerdfonts
-	c.Printf("https://github.com/%s\n", b.RepoName)
+	c.Println("https://github.com/" + b.RepoName)
 	c.Println("")
 	color.Style{color.FgGreen, color.OpItalic}.Println("Setup completed successfully.")
 	c.Println("")

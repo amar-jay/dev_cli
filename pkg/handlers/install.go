@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-
-	"github.com/abiosoft/ishell/v2"
 )
 
 func commandExists(cmd string) bool {
@@ -19,13 +17,13 @@ func execCommand(command string, args ...string) error {
 	cmd.Stderr = os.Stderr
 	err := cmd.Run()
 	if err != nil {
-		return fmt.Errorf("Failed to execute command %s: %v\n", command, err)
+		return fmt.Errorf("failed to execute command %s: %v", command, err)
 	}
 	return nil
 }
 
 // NOTE: add progress bar
-func (b *Handlers) CheckInstalled(c *ishell.Context) {
+func (b *Handlers) CheckInstalled(c HandlerContext) {
 
 	// Check if neovim is already installed
 	if !commandExists("nvim") {

@@ -2,11 +2,11 @@ package handlers
 
 import (
 	"fmt"
-	"github.com/abiosoft/ishell/v2"
-	"github.com/amar-jay/dev_cli/pkg/utils"
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/amar-jay/dev_cli/pkg/utils"
 )
 
 type Handlers struct {
@@ -19,7 +19,7 @@ type Handlers struct {
 }
 
 // TmuxBackup backs up the existing tmux configuration file be it a file or directory
-func (b *Handlers) TmuxBackup(c *ishell.Context) {
+func (b *Handlers) TmuxBackup(c HandlerContext) {
 	c.Println("Backing up previous tmux config....")
 	currentTime := time.Now().Format("2006-01-02")
 
@@ -45,7 +45,7 @@ func (b *Handlers) TmuxBackup(c *ishell.Context) {
 }
 
 // NvimBackup backs up the existing nvim configuration be it a file or directory
-func (b *Handlers) NvimBackup(c *ishell.Context) {
+func (b *Handlers) NvimBackup(c HandlerContext) {
 	c.Println("Backing up previous nvim config....")
 	currentTime := time.Now().Format("2006-01-02")
 
@@ -71,7 +71,7 @@ func (b *Handlers) NvimBackup(c *ishell.Context) {
 }
 
 // restores the previous tmux configuration backup
-func (b *Handlers) TmuxRestore(c *ishell.Context) {
+func (b *Handlers) TmuxRestore(c HandlerContext) {
 	// TODO: based on the backup file name, determone which is the latest Backup file
 	// TODO: then untar the file and restore the configuration
 	// TODO: if the backup file does not exist, then print a message
@@ -79,7 +79,7 @@ func (b *Handlers) TmuxRestore(c *ishell.Context) {
 }
 
 // restores the previous neovim configuration backup
-func (b *Handlers) NvimRestore(c *ishell.Context) {
+func (b *Handlers) NvimRestore(c HandlerContext) {
 	// TODO: based on the backup file name, determone which is the latest Backup file
 	// TODO: then untar the file and restore the configuration
 	// TODO: if the backup file does not exist, then print a message

@@ -19,7 +19,7 @@ func (b *Handlers) symlinks() error {
 	tmuxSymDir := filepath.Join(b.HomeDir, ".tmux")
 
 	if err := utils.CreateSymlink(b.TmuxConfigPath, tmuxSymDir); err != nil {
-		return fmt.Errorf("Error creating symlink for tmux: %v", err)
+		return fmt.Errorf("error creating symlink for tmux: %v", err)
 	}
 
 	// tmux default config file and its symlink
@@ -27,7 +27,7 @@ func (b *Handlers) symlinks() error {
 	tmuxFile := filepath.Join(b.TmuxConfigPath, "tmux.conf")
 
 	if err := utils.CreateSymlink(tmuxFile, tmuxSymFile); err != nil {
-		return fmt.Errorf("Error creating symlink for tmux: %v", err)
+		return fmt.Errorf("error creating symlink for tmux: %v", err)
 	}
 	return nil
 
@@ -55,11 +55,32 @@ func New(repoName, backupDir string) Handlers {
 		TmuxConfigPath: filepath.Join(confDir, "tmux"),
 	}
 
+	return h
+}
+
+func (h Handlers) Extras() {
+
 	// create backup dir if it does not exist
 	if _, err := os.Stat(h.BackupDir); err != nil {
-		println("Creating backup directory....")
-		if err := os.MkdirAll(h.BackupDir, 0755); err != nil {
-			panic(err)
+		if os.IsNotExist(err) {
+			if err := os.MkdirAll(h.BackupDir, 0755); err != nil {
+				panic(fmt.Errorf("failed to create backup directory: %w", err))
+			}
+		} else {
+			panic(fmt.Errorf("failed to check backup directory: %w", err))
+		}
+	} else {
+		println("Backup directory already exists.")
+	}
+	// check if neovim and tmux config is available if not install
+	_, err := os.Stat(h.NvimConfigPath)
+	_, err2 := os.Stat(h.TmuxConfigPath)
+	println(h.NvimConfigPath)
+	println(h.TmuxConfigPath)
+	if err != nil || err2 != nil {
+		if os.IsNotExist(err) || os.IsNotExist(err2) {
+			println("neovim/tmux files dont' exist")
+			//h.CloneRepo(CliHandlerContext{})
 		}
 	}
 
@@ -68,5 +89,4 @@ func New(repoName, backupDir string) Handlers {
 		panic(err)
 	}
 
-	return h
 }
