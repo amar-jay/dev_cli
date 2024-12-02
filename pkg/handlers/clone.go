@@ -55,7 +55,8 @@ func ghForkRepo(c HandlerContext, repoName, tempDir string) error {
 }
 
 func gitForkRepo(_ HandlerContext, repoName, tempDir string) error {
-	cmd := exec.Command("git", "clone", "https://github.com/"+repoName+".git", tempDir)
+	println("git", "clone", "--recurse-submodules", "https://github.com/"+repoName+".git", tempDir)
+	cmd := exec.Command("git", "clone", "--recurse-submodules", "https://github.com/"+repoName+".git", tempDir)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
@@ -66,7 +67,7 @@ func gitForkRepo(_ HandlerContext, repoName, tempDir string) error {
 
 // clone github config to path and load
 func (b *Handlers) CloneRepo(c HandlerContext) {
-	tempDir, err := os.MkdirTemp(".", "dev_cli-*")
+	tempDir, err := os.MkdirTemp("", "dev_cli-*")
 	if err != nil {
 		c.Println("error creating temporary directory:", err.Error())
 		return
@@ -99,7 +100,7 @@ func (b *Handlers) CloneRepo(c HandlerContext) {
 		oldpath := filepath.Join(tempDir, name)
 		if _, err := os.Lstat(newpath); os.IsNotExist(err) {
 			if err := os.Rename(oldpath, newpath); err != nil {
-				c.Println("error copying", oldpath, "to", newpath, err.Error())
+				c.Println("1, error copying", oldpath, "to", newpath, err.Error())
 				return
 			}
 		}
@@ -110,8 +111,21 @@ func (b *Handlers) CloneRepo(c HandlerContext) {
 		}
 
 		if err := os.Rename(oldpath, newpath); err != nil {
-			c.Println("error copying", oldpath, "to", newpath, err.Error())
-			return
+			
+			if _, err = os.Stat(oldpath); err != nil && os.IsNotExist(err){
+				println(">>" + oldpath)
+				return
+			}
+			
+			if _, err = os.Stat(newpath); err != nil  && os.IsNotExist(err) {
+				println(">>" + newpath)
+				return
+			}
+
+			if err != nil {
+				c.Println("2, error copying", oldpath, "to", newpath, err.Error())
+				return
+			}
 		}
 	}
 

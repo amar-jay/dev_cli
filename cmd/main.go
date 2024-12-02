@@ -184,8 +184,6 @@ func Cli(handler handlers.Handlers, osArgs []string) {
 				Aliases: []string{"sh"},
 				Usage:   "Send greetings",
 				Action: func(c *cli.Context) error {
-					log.Println("Running shell...")
-					fmt.Println(c.Args().Slice())
 					Shell(handler, c.Args().Slice())
 					return nil
 				},

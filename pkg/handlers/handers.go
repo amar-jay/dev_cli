@@ -75,8 +75,6 @@ func (h Handlers) Extras() {
 	// check if neovim and tmux config is available if not install
 	_, err := os.Stat(h.NvimConfigPath)
 	_, err2 := os.Stat(h.TmuxConfigPath)
-	println(h.NvimConfigPath)
-	println(h.TmuxConfigPath)
 	if err != nil || err2 != nil {
 		if os.IsNotExist(err) || os.IsNotExist(err2) {
 			println("neovim/tmux files dont' exist")

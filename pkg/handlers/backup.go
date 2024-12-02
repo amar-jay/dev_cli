@@ -55,8 +55,9 @@ func (b *Handlers) NvimBackup(c HandlerContext) {
 
 	// if backup file exists, remove it, then create a new one
 	if _, err := os.Stat(backup_filename); err == nil {
-		c.Println("A backup file exists with same name. Removing that")
-		os.Remove(backup_filename)
+		c.Println("A backup file exists with same name. Remove it first")
+		return
+		//os.Remove(backup_filename)
 	}
 
 	// tar compression of tmux config file

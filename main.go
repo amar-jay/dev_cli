@@ -24,6 +24,7 @@ import (
 * - setup neovim plugins
  */
 func Shell(handler handlers.Handlers, osArgs []string) {
+	handler.Greetings(handlers.CliHandlerContext{});
 	handler.Extras()
 	shell := ishell.New()
 
@@ -131,8 +132,8 @@ func Cli(handler handlers.Handlers, osArgs []string) {
 		}
 	}
 	app := &cli.App{
-		Name:  "devsetup",
-		Usage: "Simplify Amar Jay's development environment setup",
+		Name:  "dev_cli",
+		Usage: "Simplify Amar Jay's dev environment setup",
 		Commands: []*cli.Command{
 			{
 				Name:    "download",
@@ -152,23 +153,23 @@ func Cli(handler handlers.Handlers, osArgs []string) {
 				Usage:   "Check for present environment variables",
 				Action: func(c *cli.Context) error {
 					choices := []string{"tmux", "nvim"}
-					log.Println("Select an option:")
+					fmt.Println("Select an option:")
 					for i, choice := range choices {
-						log.Printf("[%d] %s\n", i, choice)
+						fmt.Printf("[%d] %s\n", i, choice)
 					}
 
 					var choice int
 					_, err := fmt.Scan(&choice)
 					if err != nil || choice < 0 || choice >= len(choices) {
-						log.Println("Invalid choice")
+						fmt.Println("Invalid choice")
 						return nil
 					}
 
 					switch choice {
 					case 0:
-						log.Println("Env of the tmux variable:", handler.TmuxConfigPath)
+						fmt.Println("Env of the tmux variable:", handler.TmuxConfigPath)
 					case 1:
-						log.Println("Env of the neovim variable:", handler.NvimConfigPath)
+						fmt.Println("Env of the neovim variable:", handler.NvimConfigPath)
 					}
 					return nil
 				},
@@ -184,8 +185,6 @@ func Cli(handler handlers.Handlers, osArgs []string) {
 				Aliases: []string{"sh"},
 				Usage:   "Send greetings",
 				Action: func(c *cli.Context) error {
-					log.Println("Running shell...")
-					fmt.Println(c.Args().Slice())
 					Shell(handler, c.Args().Slice())
 					return nil
 				},
@@ -195,31 +194,28 @@ func Cli(handler handlers.Handlers, osArgs []string) {
 				Aliases: []string{"back"},
 				Usage:   "Backup files, tmux/neovim",
 				Action: func(c *cli.Context) error {
-					log.Println("Which of them to backup?")
+					fmt.Println("Which of them to backup?(default: 0)")
 					choices := []string{"tmux", "nvim"}
 					for i, choice := range choices {
-						log.Printf("[%d] %s\n", i, choice)
+						fmt.Printf("[%d] %s\n", i, choice)
 					}
+					fmt.Printf(">>");
 
-					var selected []int
+					var selected int
 					_, err := fmt.Scan(&selected)
 					if err != nil {
-						log.Println("Invalid input")
+						fmt.Println("Invalid input")
 						return nil
 					}
 
-					if len(selected) == 0 {
-						log.Println("Did not backup any! 🙄")
-					} else {
-						for _, s := range selected {
-							switch s {
+							switch selected {
 							case 0:
 								wrapCliHandler(handler.TmuxBackup)(c)
 							case 1:
 								wrapCliHandler(handler.NvimBackup)(c)
+							default:
+								fmt.Println("Did not backup any! 🙄")
 							}
-						}
-					}
 					return nil
 				},
 			},
@@ -234,6 +230,6 @@ func Cli(handler handlers.Handlers, osArgs []string) {
 
 func main() {
 
-	handler := handlers.New("amar-jay/dev_cli", ".dev_cli")
+	handler := handlers.New("amar-jay/.dotfiles", ".dev_cli")
 	Cli(handler, os.Args)
 }

@@ -39,14 +39,14 @@ func CreateSymlink(src, dst string) error {
 
 	// Remove existing file/directory at dst if it's not a symlink
 	if _, err := os.Stat(dst); err == nil {
-		fmt.Printf("Removing existing path '%v'.\n", dst)
+		//fmt.Printf("Removing existing path '%v'.\n", dst)
 		if err := os.RemoveAll(dst); err != nil {
 			return fmt.Errorf("failed to remove existing path: %w", err)
 		}
 	}
 
 	// Create a new symlink
-	fmt.Printf("Creating symlink '%v' -> '%v'.\n", dst, src)
+	//fmt.Printf("Creating symlink '%v' -> '%v'.\n", dst, src)
 	if err := os.Symlink(src, dst); err != nil {
 		if os.IsExist(err) {
 			return fmt.Errorf("tmux config doesn't match Amar Jay's config (HINT: DELETE & DOWNLOAD IT)")
