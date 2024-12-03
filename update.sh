@@ -10,11 +10,13 @@ INSTALL_DIR="/usr/local/bin"
 BASE_URL="https://github.com/amar-jay/dev_cli/releases/download"
 
 # Prompt the user for the version
-read -p "Enter the version of ${CLI_NAME} to install (e.g., 1.0.12): " VERSION
-if [[ -z "$VERSION" ]]; then
-    echo "Version cannot be empty. Aborting."
-    exit 1
-fi
+#read -p "Enter the version of ${CLI_NAME} to install (e.g., 1.0.12): " VERSION
+#if [[ -z "$VERSION" ]]; then
+#    echo "Version cannot be empty. Aborting."
+#    exit 1
+#fi
+
+VERSION=$(curl -s https://api.github.com/repos/amar-jay/dev_cli/releases/latest | jq -r '.tag_name')
 
 # Detect the platform
 case "$(uname -s)" in
