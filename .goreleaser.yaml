@@ -1,0 +1,18 @@
+project_name: dev_cli
+builds:
+  - goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+nfpms:
+  - maintainer: Amar Jay <abdmananjnr@gmail.com>
+    description: Amar jay's dev configs as CLI.
+    homepage: https://github.com/amar-jay/dev_cli
+    license: MIT
+    formats:
+      - deb
+      - rpm
+      - apk
