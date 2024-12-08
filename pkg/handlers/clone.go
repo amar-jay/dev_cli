@@ -67,7 +67,7 @@ func gitForkRepo(_ HandlerContext, repoName, tempDir string) error {
 
 // clone github config to path and load
 func (b *Handlers) CloneRepo(c HandlerContext) {
-	tempDir, err := os.MkdirTemp("", "dev_cli-*")
+	tempDir, err := os.MkdirTemp(".", "dev_cli-*")
 	if err != nil {
 		c.Println("error creating temporary directory:", err.Error())
 		return
