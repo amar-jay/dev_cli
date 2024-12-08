@@ -9,24 +9,48 @@ INSTALL_DIR="/usr/local/bin"
 # Define base URL for downloads
 BASE_URL="https://github.com/amar-jay/dev_cli/releases/download"
 
-# Prompt the user for the version
-#read -p "Enter the version of ${CLI_NAME} to install (e.g., 1.0.12): " VERSION
-#if [[ -z "$VERSION" ]]; then
-#    echo "Version cannot be empty. Aborting."
-#    exit 1
-#fi
-
+# Fetch the latest version if VERSION is not explicitly set
 VERSION=$(curl -s https://api.github.com/repos/amar-jay/dev_cli/releases/latest | jq -r '.tag_name')
+if [[ -z "$VERSION" ]]; then
+    echo "Unable to fetch the latest version. Aborting."
+    exit 1
+fi
 
-# Detect the platform
-case "$(uname -s)" in
-    Linux*)     PLATFORM="linux_amd64" ;;
-    Darwin*)    PLATFORM="darwin_amd64" ;;
-    *)          echo "Unsupported platform: $(uname -s)" && exit 1 ;;
+# Detect the platform and architecture
+OS=$(uname -s)
+ARCH=$(uname -m)
+
+case "$OS" in
+    Linux*)
+        PLATFORM_OS="linux"
+        ;;
+    Darwin*)
+        PLATFORM_OS="darwin"
+        ;;
+    *)
+        echo "Unsupported operating system: $OS"
+        exit 1
+        ;;
+esac
+
+case "$ARCH" in
+    x86_64)
+        PLATFORM_ARCH="386"
+        ;;
+    arm64|aarch64)
+        PLATFORM_ARCH="arm64"
+        ;;
+    armv7l)
+        PLATFORM_ARCH="armv7"
+        ;;
+    *)
+        echo "Unsupported architecture: $ARCH"
+        exit 1
+        ;;
 esac
 
 # Construct the download URL
-TAR_NAME="${CLI_NAME}_${VERSION}_${PLATFORM}.tar.gz"
+TAR_NAME="${CLI_NAME}_${VERSION}_${PLATFORM_OS}_${PLATFORM_ARCH}.tar.gz"
 DOWNLOAD_URL="${BASE_URL}/${VERSION}/${TAR_NAME}"
 
 # Function to clean up previous installations
@@ -53,4 +77,3 @@ install_new_version() {
 # Execute the functions
 cleanup_previous_installation
 install_new_version
-
